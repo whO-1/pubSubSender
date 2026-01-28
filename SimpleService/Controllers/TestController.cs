@@ -97,14 +97,14 @@ public class TestController(ILogger<TestController> logger, HttpClient httpClien
 
         Baggage.Current = parentContext.Baggage;
 
-        var currentActivity = Activity.Current;
-        if (currentActivity != null)
-        {
-            currentActivity.SetParentId(parentContext.ActivityContext.TraceId, parentContext.ActivityContext.SpanId);
-        }
+        var activitySource = new ActivitySource("My First Project");
+        using var activity = activitySource.StartActivity(
+            "pubsub.receive",
+            ActivityKind.Consumer,
+            parentContext.ActivityContext);
             
-        var traceId = parentContext.ActivityContext.TraceId.ToString();
-        logger.LogInformation("Received trace id: {TraceId}", traceId);
+        var traceId = Request.Headers["traceparent"].ToString();
+        logger.LogInformation($"Received trace id: {traceId}");
             
         return Ok();
     }
