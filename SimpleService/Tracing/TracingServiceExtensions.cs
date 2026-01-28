@@ -29,14 +29,7 @@ namespace SimpleService.Tracing
 					builder
 						.AddSource(serviceName)
 						.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName: serviceName))
-						.AddAspNetCoreInstrumentation(options =>
-						{
-							options.Filter = ctx =>
-							{
-								var path = ctx.Request.Path;
-								return !path.Value!.EndsWith("/push", StringComparison.OrdinalIgnoreCase);
-							};
-						})
+						.AddAspNetCoreInstrumentation()
 						.AddHttpClientInstrumentation();
 
 					configure?.Invoke(builder);
