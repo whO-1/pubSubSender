@@ -60,7 +60,7 @@ public class TestController(ILogger<TestController> logger, HttpClient httpClien
         var attributes = new Dictionary<string, string>();
         try
         {
-            var publisher = await publisherFactory.GetPublisherAsync("projects/robust-being-485614-f2/topics/test-topic");
+            var publisher = await publisherFactory.GetPublisherAsync("test-topic");
             publisher?.PublishMessage("testTenantId", message, attributes);
             return Ok("Successfully published!");
         }

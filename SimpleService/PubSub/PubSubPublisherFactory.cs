@@ -28,7 +28,7 @@ namespace SimpleService.PubSub
 				{
 					EvictionCallback = OnPublisherRemoved
 				});
-				
+
 				var publisherClient = await CreatePublisherClientAsync(logger, topicId, _settings.GcpProjectId, settings);
 				var publisherLogger = _loggerFactory.CreateLogger<PubSubPublisher>();
 				return new PubSubPublisher(publisherClient, publisherLogger, topicId);
@@ -44,20 +44,26 @@ namespace SimpleService.PubSub
 				Settings = settings
 			};
 
-			if (!string.IsNullOrWhiteSpace(_settings.EmulatorEndpoint)){
-				logger.LogInformation("Using PubSub emulator at endpoint {Endpoint} for GCP project ID: {ProjectId}", _settings.EmulatorEndpoint, gcpProjectId);
-				publisherClientBuilder.EmulatorDetection = EmulatorDetection.EmulatorOrProduction;
-				publisherClientBuilder.Endpoint = _settings.EmulatorEndpoint;
-			}
+			if (string.IsNullOrWhiteSpace(_settings.EmulatorEndpoint)) return await publisherClientBuilder.BuildAsync();
+			logger.LogInformation("Using PubSub emulator at endpoint {Endpoint} for GCP project ID: {ProjectId}", _settings.EmulatorEndpoint, gcpProjectId);
+			publisherClientBuilder.EmulatorDetection = EmulatorDetection.EmulatorOrProduction;
+			publisherClientBuilder.Endpoint = _settings.EmulatorEndpoint;
 
 			return await publisherClientBuilder.BuildAsync();
 		}
 
 		private static async void OnPublisherRemoved(object key, object? value, EvictionReason reason, object? state)
 		{
-			if (value is IPublisher publisher)
+			try
 			{
-				await publisher.DisposeAsync();
+				if (value is IPublisher publisher)
+				{
+					await publisher.DisposeAsync();
+				}
+			}
+			catch (Exception e)
+			{
+				throw; // TODO handle exception
 			}
 		}
 	}
