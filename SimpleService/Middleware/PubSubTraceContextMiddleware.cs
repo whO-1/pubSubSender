@@ -18,21 +18,35 @@ public class PubSubTraceContextMiddleware
 
 	public async Task InvokeAsync(HttpContext context)
 	{
+		_logger.LogInformation("PubSubTraceContextMiddleware: Processing request {Path} {Method}", 
+			context.Request.Path, 
+			context.Request.Method);
+		
 		if (context.Request.Path.Value?.EndsWith("/push", StringComparison.OrdinalIgnoreCase) == true &&
 		    context.Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
 		{
+			_logger.LogInformation("PubSubTraceContextMiddleware: Matched /push endpoint");
+			
 			try
 			{
 				context.Request.EnableBuffering();
 
 				using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
 				var body = await reader.ReadToEndAsync();
-				context.Request.Body.Position = 0; 
+				context.Request.Body.Position = 0;
+				
+				_logger.LogInformation("PubSubTraceContextMiddleware: Body read, length: {Length}, raw body: {Body}", body.Length, body);
 
 				var message = System.Text.Json.JsonSerializer.Deserialize<PubsubMessage>(body);
+				
+				_logger.LogInformation("PubSubTraceContextMiddleware: Deserialized message, has attributes: {HasAttributes}, count: {Count}", 
+					message?.Attributes != null, 
+					message?.Attributes?.Count ?? 0);
 
 				if (message?.Attributes != null && message.Attributes.Count > 0)
 				{
+					_logger.LogInformation("PubSubTraceContextMiddleware: Message attributes: {@Attributes}", message.Attributes);
+					
 					var propagator = new CompositeTextMapPropagator(
 						new TextMapPropagator[] {
 							new TraceContextPropagator(),
@@ -48,34 +62,47 @@ public class PubSubTraceContextMiddleware
 								? new[] { value }
 								: Array.Empty<string>());
 
+					_logger.LogInformation("PubSubTraceContextMiddleware: Extracted context - TraceId: {TraceId}, SpanId: {SpanId}", 
+						parentContext.ActivityContext.TraceId,
+						parentContext.ActivityContext.SpanId);
+
 					if (parentContext.ActivityContext.TraceId != default)
 					{
 						// Try to set header before activity is created
 						if (!context.Request.Headers.ContainsKey("traceparent"))
 						{
-							context.Request.Headers["traceparent"] = $"00-{parentContext.ActivityContext.TraceId}-{parentContext.ActivityContext.SpanId}-01";
+							var traceparent = $"00-{parentContext.ActivityContext.TraceId}-{parentContext.ActivityContext.SpanId}-01";
+							context.Request.Headers["traceparent"] = traceparent;
+							_logger.LogInformation("PubSubTraceContextMiddleware: Injected traceparent header: {Traceparent}", traceparent);
+						}
+						else
+						{
+							_logger.LogWarning("PubSubTraceContextMiddleware: traceparent header already exists");
 						}
 						
 						Baggage.Current = parentContext.Baggage;
 						
 						// Store in HttpContext items for later use
 						context.Items["PubSubTraceContext"] = parentContext;
-						
-						_logger.LogInformation(
-							"Extracted trace context from Pub/Sub message - TraceId: {TraceId}, SpanId: {SpanId}",
-							parentContext.ActivityContext.TraceId,
-							parentContext.ActivityContext.SpanId);
 					}
 					else
 					{
-						_logger.LogWarning("No valid trace context found in Pub/Sub message attributes");
+						_logger.LogWarning("PubSubTraceContextMiddleware: Extracted TraceId is default/empty");
 					}
+				}
+				else
+				{
+					_logger.LogWarning("PubSubTraceContextMiddleware: Message has no attributes or is null");
 				}
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Error extracting trace context from Pub/Sub message");
+				_logger.LogError(ex, "PubSubTraceContextMiddleware: Error extracting trace context from Pub/Sub message");
 			}
+		}
+		else
+		{
+			_logger.LogInformation("PubSubTraceContextMiddleware: Not a /push endpoint, skipping");
 		}
 
 		await _next(context);
@@ -86,9 +113,10 @@ public class PubSubTraceContextMiddleware
 			var expectedContext = (PropagationContext)context.Items["PubSubTraceContext"];
 			var actualTraceId = Activity.Current?.TraceId.ToString();
 			_logger.LogInformation(
-				"Trace propagation result - Expected: {ExpectedTraceId}, Actual: {ActualTraceId}",
+				"PubSubTraceContextMiddleware: Trace propagation result - Expected: {ExpectedTraceId}, Actual: {ActualTraceId}, Match: {Match}",
 				expectedContext.ActivityContext.TraceId,
-				actualTraceId);
+				actualTraceId,
+				expectedContext.ActivityContext.TraceId.ToString() == actualTraceId);
 		}
 	}
 }

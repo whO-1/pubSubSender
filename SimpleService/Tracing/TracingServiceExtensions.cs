@@ -22,14 +22,24 @@ namespace SimpleService.Tracing
 			}
 
 			services.Configure<TracingSettings>(configuration);
-
+		
+			
 			services.AddOpenTelemetry()
+				.ConfigureResource(resource => resource
+					.AddService(serviceName: serviceName))
 				.WithTracing(builder =>
 				{
 					builder
 						.AddSource(serviceName)
 						.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName: serviceName))
-						.AddAspNetCoreInstrumentation()
+						.AddAspNetCoreInstrumentation(options =>
+						{
+							options.Filter = ctx =>
+							{
+								var path = ctx.Request.Path;
+								return !path.Value!.EndsWith("/push", StringComparison.OrdinalIgnoreCase);
+							};
+						})
 						.AddHttpClientInstrumentation();
 
 					configure?.Invoke(builder);

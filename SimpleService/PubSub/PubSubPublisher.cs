@@ -46,6 +46,9 @@ namespace SimpleService.PubSub
 			try
 			{
 				var enrichedAttributes = EnrichAttributesWithTrace(attributes);
+			
+			_logger.LogInformation("[{MethodName}] After enrichment - count: {Count}, attributes: {@EnrichedAttributes}", 
+				nameof(PublishPubSubMessage), enrichedAttributes?.Count ?? 0, enrichedAttributes);
 
 				var pubSubMessage = new PubsubMessage
 				{
@@ -55,6 +58,12 @@ namespace SimpleService.PubSub
 				if (enrichedAttributes is not null && enrichedAttributes.Count > 0)
 				{
 					pubSubMessage.Attributes.Add(enrichedAttributes);
+					_logger.LogInformation("[{MethodName}] Added to PubsubMessage: {@Attrs}", 
+						nameof(PublishPubSubMessage), pubSubMessage.Attributes);
+				}
+				else
+				{
+					_logger.LogWarning("[{MethodName}] No attributes", nameof(PublishPubSubMessage));
 				}
 
 				// The call should not be awaited, read more here:
