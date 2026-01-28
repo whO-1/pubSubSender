@@ -1,0 +1,175 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\ddiocher\\Desktop\\projects\\pubSubSender\\HiiRetail.Platform.SimpleService\\HiiRetail.Platform.SimpleService.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\ddiocher\\Desktop\\projects\\pubSubSender\\HiiRetail.Platform.SimpleService\\HiiRetail.Platform.SimpleService.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\ddiocher\\Desktop\\projects\\pubSubSender\\HiiRetail.Platform.SimpleService\\HiiRetail.Platform.SimpleService.csproj",
+        "projectName": "HiiRetail.Platform.SimpleService",
+        "projectPath": "C:\\Users\\ddiocher\\Desktop\\projects\\pubSubSender\\HiiRetail.Platform.SimpleService\\HiiRetail.Platform.SimpleService.csproj",
+        "packagesPath": "C:\\Users\\ddiocher\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ddiocher\\Desktop\\projects\\pubSubSender\\HiiRetail.Platform.SimpleService\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\ddiocher\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "c:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://pkgs.dev.azure.com/re-vision/_packaging/nuget-ci-production/nuget/v3/index.json": {},
+          "https://repo.extendaretail.com/repository/nuget-group/": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.ApiInfrastructure\\HiiRetail.Platform.ApiInfrastructure.csproj": {
+                "projectPath": "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.ApiInfrastructure\\HiiRetail.Platform.ApiInfrastructure.csproj"
+              },
+              "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Communication.PubSub\\HiiRetail.Platform.Communication.PubSub.csproj": {
+                "projectPath": "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Communication.PubSub\\HiiRetail.Platform.Communication.PubSub.csproj"
+              },
+              "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Cron\\HiiRetail.Platform.Cron.csproj": {
+                "projectPath": "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Cron\\HiiRetail.Platform.Cron.csproj"
+              },
+              "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Data.CloudStorage\\HiiRetail.Platform.Data.CloudStorage.csproj": {
+                "projectPath": "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Data.CloudStorage\\HiiRetail.Platform.Data.CloudStorage.csproj"
+              },
+              "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Data.Postgres\\HiiRetail.Platform.Data.Postgres.csproj": {
+                "projectPath": "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Data.Postgres\\HiiRetail.Platform.Data.Postgres.csproj"
+              },
+              "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Data.Redis\\HiiRetail.Platform.Data.Redis.csproj": {
+                "projectPath": "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Data.Redis\\HiiRetail.Platform.Data.Redis.csproj"
+              },
+              "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.FeatureFlags\\HiiRetail.Platform.FeatureFlags.csproj": {
+                "projectPath": "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.FeatureFlags\\HiiRetail.Platform.FeatureFlags.csproj"
+              },
+              "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Observability.Logging\\HiiRetail.Platform.Observability.Logging.csproj": {
+                "projectPath": "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Observability.Logging\\HiiRetail.Platform.Observability.Logging.csproj"
+              },
+              "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Security.Context\\HiiRetail.Platform.Security.Context.csproj": {
+                "projectPath": "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Security.Context\\HiiRetail.Platform.Security.Context.csproj"
+              },
+              "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Security.WorkloadIdentity\\HiiRetail.Platform.Security.WorkloadIdentity.csproj": {
+                "projectPath": "C:\\Users\\ddiocher\\Desktop\\projects\\src\\HiiRetail.Platform.Security.WorkloadIdentity\\HiiRetail.Platform.Security.WorkloadIdentity.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Asp.Versioning.Mvc": {
+              "target": "Package",
+              "version": "[8.1.0, )"
+            },
+            "Asp.Versioning.Mvc.ApiExplorer": {
+              "target": "Package",
+              "version": "[8.1.0, )"
+            },
+            "Google.Cloud.PubSub.V1": {
+              "target": "Package",
+              "version": "[3.30.0, )"
+            },
+            "Microsoft.AspNetCore.Mvc.Versioning": {
+              "target": "Package",
+              "version": "[5.1.0, )"
+            },
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[8.0.22, )"
+            },
+            "Microsoft.Extensions.Caching.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Caching.Memory": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "Microsoft.Extensions.Hosting.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "Microsoft.Extensions.Logging.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.2, )"
+            },
+            "Microsoft.Extensions.Options.ConfigurationExtensions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "OpenTelemetry.Api": {
+              "target": "Package",
+              "version": "[1.14.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[8.0.2, )"
+            },
+            "Serilog.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[6.1.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

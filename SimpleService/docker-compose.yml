@@ -1,0 +1,36 @@
+name: simpleservice
+
+services:
+  simple-service:
+    build:
+      context: ../..
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      SERVICE_PROJECT_ID: local-project
+      EMULATOR_ENDPOINT: pubsub:8085
+      CLOUD_STORAGE_SETTINGS__BUCKET_NAME: simpleservice-bucket
+      STORAGE_EMULATOR_HOST: http://gcs-proxy:9023
+      GOOGLE_CLOUD_PROJECT: local-project
+      PUBSUB_EMULATOR_HOST: pubsub:8085
+    depends_on:
+      - pubsub
+
+  pubsub:
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:emulators
+    command: ["gcloud", "beta", "emulators", "pubsub", "start", "--project=local-project", "--host-port=0.0.0.0:8085"]
+    ports:
+      - "8085:8085"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  init:
+    image: curlimages/curl:8.6.0
+    depends_on:
+      - pubsub
+    command:
+      - sh
+      - -c
+      - "until curl -s http://pubsub:8085/v1/projects/local-project/topics >/dev/null; do sleep 1; done; curl -s -X PUT http://pubsub:8085/v1/projects/local-project/topics/simple-topic || true; curl -s -X PUT http://pubsub:8085/v1/projects/local-project/subscriptions/simple-sub -H 'Content-Type: application/json' -d '{\"topic\":\"projects/local-project/topics/simple-topic\",\"pushConfig\":{\"pushEndpoint\":\"http://simple-service:8080/api/v1/pubsub/push\"}}' || true; curl -s -X PUT http://pubsub:8085/v1/projects/local-project/subscriptions/simple-host-sub -H 'Content-Type: application/json' -d '{\"topic\":\"projects/local-project/topics/simple-topic\",\"pushConfig\":{\"pushEndpoint\":\"http://host.docker.internal:8080/api/v1/pubsub/push\"}}' || true"

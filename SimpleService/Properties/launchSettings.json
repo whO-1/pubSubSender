@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "SimpleService": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PUBSUB_EMULATOR_HOST": "localhost:8085",
+        "GOOGLE_CLOUD_PROJECT": "local-project",
+        "STORAGE_EMULATOR_HOST": "http://localhost:9024"
+      },
+      "applicationUrl": "https://localhost:8081;http://0.0.0.0:8080"
+    }
+  }
+}
