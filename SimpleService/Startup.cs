@@ -51,6 +51,7 @@ public class Startup
 	{
 		app.UseSerilogRequestLogging();
 		app.UseRouting();
+		app.UseMiddleware<Middleware.PubSubTraceContextMiddleware>();
 		app.UseExceptionHandler("/error");
 		app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 	}

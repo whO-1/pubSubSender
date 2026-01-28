@@ -81,31 +81,9 @@ public class TestController(ILogger<TestController> logger, HttpClient httpClien
     [HttpPost("[action]/push")]
     public IActionResult TraceIdPropagation([FromBody] PubsubMessage message)
     {
-        var propagator = new CompositeTextMapPropagator(
-            new TextMapPropagator[] {
-                new TraceContextPropagator(),
-                new BaggagePropagator()
-            }
-        );
-        var parentContext = propagator.Extract(
-            default,
-            message.Attributes,
-            (carrier, key) =>
-                carrier.TryGetValue(key, out var value)
-                    ? new[] { value }
-                    : Array.Empty<string>());
-
-        Baggage.Current = parentContext.Baggage;
-
-        var activitySource = new ActivitySource("My First Project");
-        using var activity = activitySource.StartActivity(
-            "pubsub.receive",
-            ActivityKind.Consumer,
-            parentContext.ActivityContext);
-            
-        var traceId = Request.Headers["traceparent"].ToString();
-        logger.LogInformation($"Received trace id: {traceId}");
-            
+        var traceId = Activity.Current?.TraceId.ToString() ?? "no-trace";
+        logger.LogInformation("Processing Pub/Sub message with trace id: {TraceId}", traceId);
+        
         return Ok();
     }
 }
