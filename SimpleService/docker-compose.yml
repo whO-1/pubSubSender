@@ -10,7 +10,6 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       SERVICE_PROJECT_ID: local-project
-      EMULATOR_ENDPOINT: pubsub:8085
       CLOUD_STORAGE_SETTINGS__BUCKET_NAME: simpleservice-bucket
       STORAGE_EMULATOR_HOST: http://gcs-proxy:9023
       GOOGLE_CLOUD_PROJECT: local-project

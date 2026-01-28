@@ -44,10 +44,11 @@ namespace SimpleService.PubSub
 				Settings = settings
 			};
 
-			if (string.IsNullOrWhiteSpace(_settings.EmulatorEndpoint)) return await publisherClientBuilder.BuildAsync();
-			logger.LogInformation("Using PubSub emulator at endpoint {Endpoint} for GCP project ID: {ProjectId}", _settings.EmulatorEndpoint, gcpProjectId);
-			publisherClientBuilder.EmulatorDetection = EmulatorDetection.EmulatorOrProduction;
-			publisherClientBuilder.Endpoint = _settings.EmulatorEndpoint;
+			if (!string.IsNullOrWhiteSpace(_settings.EmulatorEndpoint)){
+				logger.LogInformation("Using PubSub emulator at endpoint {Endpoint} for GCP project ID: {ProjectId}", _settings.EmulatorEndpoint, gcpProjectId);
+				publisherClientBuilder.EmulatorDetection = EmulatorDetection.EmulatorOrProduction;
+				publisherClientBuilder.Endpoint = _settings.EmulatorEndpoint;
+			}
 
 			return await publisherClientBuilder.BuildAsync();
 		}
