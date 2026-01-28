@@ -52,11 +52,18 @@ public class TestController(ILogger<TestController> logger, HttpClient httpClien
     [HttpPost("[action]")]
     public async Task<ActionResult> PublishMessageWithTraceId()
     {
-        var message = new PubsubMessage
+        var message = new PubSubMessage
         {
-            MessageId = "test-message",
-            OrderingKey = "data",
+            Subscription = "testSub",
+            Message = new PubSubMessage.Msg
+            {
+                Attributes = { { "Tenant-Id", "tenantId" } },
+                MessageId = "testId",
+                Data = "Test data",
+                OrederingKey = "test-key"
+            }
         };
+        
         var attributes = new Dictionary<string, string>();
         try
         {
