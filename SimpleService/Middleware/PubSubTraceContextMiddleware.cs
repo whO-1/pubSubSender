@@ -47,25 +47,15 @@ public class PubSubTraceContextMiddleware
 								? new[] { value }
 								: Array.Empty<string>());
 
-					Baggage.Current = parentContext.Baggage;
-					
-					var currentActivity = Activity.Current;
-					
-					// Baggage.Current = parentContext.Baggage;
-					//
-					// var activitySource = new ActivitySource("My First Project");
-					// using var activity = activitySource.StartActivity(
-					// 	"My First Project",
-					// 	ActivityKind.Consumer,
-					// 	parentContext.ActivityContext);
-					
-					
-					if (currentActivity != null && parentContext.ActivityContext.TraceId != default)
+					if (parentContext.ActivityContext.TraceId != default)
 					{
-						currentActivity.SetParentId(parentContext.ActivityContext.TraceId, parentContext.ActivityContext.SpanId);
+						// Inject the extracted trace context into HTTP headers so ASP.NET Core picks it up
+						context.Request.Headers["traceparent"] = $"00-{parentContext.ActivityContext.TraceId}-{parentContext.ActivityContext.SpanId}-01";
+						
+						Baggage.Current = parentContext.Baggage;
 						
 						_logger.LogInformation(
-							"Extracted trace context from Pub/Sub message - TraceId: {TraceId}, SpanId: {SpanId}",
+							"Injected trace context from Pub/Sub message into headers - TraceId: {TraceId}, SpanId: {SpanId}",
 							parentContext.ActivityContext.TraceId,
 							parentContext.ActivityContext.SpanId);
 					}
