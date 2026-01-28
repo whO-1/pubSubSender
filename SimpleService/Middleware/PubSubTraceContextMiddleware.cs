@@ -1,7 +1,7 @@
 using System.Diagnostics;
-using Google.Cloud.PubSub.V1;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
+using SimpleService.Models;
 
 namespace SimpleService.Middleware;
 
@@ -37,15 +37,18 @@ public class PubSubTraceContextMiddleware
 				
 				_logger.LogInformation("PubSubTraceContextMiddleware: Body read, length: {Length}, raw body: {Body}", body.Length, body);
 
-				var message = System.Text.Json.JsonSerializer.Deserialize<PubsubMessage>(body);
+				var pushRequest = System.Text.Json.JsonSerializer.Deserialize<PubSubPushRequest>(body, new System.Text.Json.JsonSerializerOptions
+			{
+				PropertyNameCaseInsensitive = true
+			});
 				
 				_logger.LogInformation("PubSubTraceContextMiddleware: Deserialized message, has attributes: {HasAttributes}, count: {Count}", 
-					message?.Attributes != null, 
-					message?.Attributes?.Count ?? 0);
+					pushRequest?.Message?.Attributes != null, 
+					pushRequest?.Message?.Attributes?.Count ?? 0);
 
-				if (message?.Attributes != null && message.Attributes.Count > 0)
+				if (pushRequest?.Message?.Attributes != null && pushRequest.Message.Attributes.Count > 0)
 				{
-					_logger.LogInformation("PubSubTraceContextMiddleware: Message attributes: {@Attributes}", message.Attributes);
+					_logger.LogInformation("PubSubTraceContextMiddleware: Message attributes: {@Attributes}", pushRequest.Message.Attributes);
 					
 					var propagator = new CompositeTextMapPropagator(
 						new TextMapPropagator[] {
@@ -56,7 +59,7 @@ public class PubSubTraceContextMiddleware
 
 					var parentContext = propagator.Extract(
 						default,
-						message.Attributes,
+						pushRequest.Message.Attributes,
 						(carrier, key) =>
 							carrier.TryGetValue(key, out var value)
 								? new[] { value }

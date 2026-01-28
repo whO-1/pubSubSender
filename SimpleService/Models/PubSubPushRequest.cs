@@ -1,5 +1,13 @@
+using System.Text.Json.Serialization;
+
 namespace SimpleService.Models;
 
-public record PubSubPushRequest(PubSubPushMessage Message, string Subscription);
+public record PubSubPushRequest(
+    [property: JsonPropertyName("message")] PubSubPushMessage Message, 
+    [property: JsonPropertyName("subscription")] string Subscription);
 
-public abstract record PubSubPushMessage(string Data, string MessageId, Dictionary<string, string>? Attributes, string PublishTime);
+public record PubSubPushMessage(
+    [property: JsonPropertyName("data")] string Data, 
+    [property: JsonPropertyName("messageId")] string MessageId, 
+    [property: JsonPropertyName("attributes")] Dictionary<string, string>? Attributes, 
+    [property: JsonPropertyName("publishTime")] string PublishTime);
