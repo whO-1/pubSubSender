@@ -18,7 +18,8 @@ public class PubSubTraceContextMiddleware
 
 	public async Task InvokeAsync(HttpContext context)
 	{
-		if (context.Request.Path.Value?.EndsWith("/push", StringComparison.OrdinalIgnoreCase) == true)
+		if (context.Request.Path.Value?.EndsWith("/push", StringComparison.OrdinalIgnoreCase) == true &&
+		    context.Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
 		{
 			try
 			{
@@ -49,13 +50,19 @@ public class PubSubTraceContextMiddleware
 
 					if (parentContext.ActivityContext.TraceId != default)
 					{
-						// Inject the extracted trace context into HTTP headers so ASP.NET Core picks it up
-						context.Request.Headers["traceparent"] = $"00-{parentContext.ActivityContext.TraceId}-{parentContext.ActivityContext.SpanId}-01";
+						// Try to set header before activity is created
+						if (!context.Request.Headers.ContainsKey("traceparent"))
+						{
+							context.Request.Headers["traceparent"] = $"00-{parentContext.ActivityContext.TraceId}-{parentContext.ActivityContext.SpanId}-01";
+						}
 						
 						Baggage.Current = parentContext.Baggage;
 						
+						// Store in HttpContext items for later use
+						context.Items["PubSubTraceContext"] = parentContext;
+						
 						_logger.LogInformation(
-							"Injected trace context from Pub/Sub message into headers - TraceId: {TraceId}, SpanId: {SpanId}",
+							"Extracted trace context from Pub/Sub message - TraceId: {TraceId}, SpanId: {SpanId}",
 							parentContext.ActivityContext.TraceId,
 							parentContext.ActivityContext.SpanId);
 					}
@@ -72,5 +79,16 @@ public class PubSubTraceContextMiddleware
 		}
 
 		await _next(context);
+		
+		// After the request, check if trace was properly propagated
+		if (context.Items.ContainsKey("PubSubTraceContext"))
+		{
+			var expectedContext = (PropagationContext)context.Items["PubSubTraceContext"];
+			var actualTraceId = Activity.Current?.TraceId.ToString();
+			_logger.LogInformation(
+				"Trace propagation result - Expected: {ExpectedTraceId}, Actual: {ActualTraceId}",
+				expectedContext.ActivityContext.TraceId,
+				actualTraceId);
+		}
 	}
 }

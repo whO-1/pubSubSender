@@ -49,9 +49,9 @@ public class Startup
 
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
 	{
+		app.UseMiddleware<Middleware.PubSubTraceContextMiddleware>();
 		app.UseSerilogRequestLogging();
 		app.UseRouting();
-		app.UseMiddleware<Middleware.PubSubTraceContextMiddleware>();
 		app.UseExceptionHandler("/error");
 		app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 	}
