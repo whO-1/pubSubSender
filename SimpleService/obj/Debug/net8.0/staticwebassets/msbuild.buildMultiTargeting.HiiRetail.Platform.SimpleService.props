@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\HiiRetail.Platform.SimpleService.props" />
-</Project>

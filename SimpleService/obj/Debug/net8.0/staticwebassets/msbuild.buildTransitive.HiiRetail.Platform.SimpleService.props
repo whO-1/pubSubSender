@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\HiiRetail.Platform.SimpleService.props" />
-</Project>

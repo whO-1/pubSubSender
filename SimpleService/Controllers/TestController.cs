@@ -97,14 +97,14 @@ public class TestController(ILogger<TestController> logger, HttpClient httpClien
 
         Baggage.Current = parentContext.Baggage;
 
-        var activitySource = new ActivitySource("myscan-input-api");
-        using var activity = activitySource.StartActivity(
-            "pubsub.receive",
-            ActivityKind.Consumer,
-            parentContext.ActivityContext);
+        var currentActivity = Activity.Current;
+        if (currentActivity != null)
+        {
+            currentActivity.SetParentId(parentContext.ActivityContext.TraceId, parentContext.ActivityContext.SpanId);
+        }
             
-        var traceId = Request.Headers["traceparent"].ToString();
-        logger.LogInformation($"Received trace id: {traceId}");
+        var traceId = parentContext.ActivityContext.TraceId.ToString();
+        logger.LogInformation("Received trace id: {TraceId}", traceId);
             
         return Ok();
     }
