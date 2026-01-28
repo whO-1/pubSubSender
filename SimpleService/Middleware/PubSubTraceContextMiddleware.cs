@@ -47,32 +47,32 @@ public class PubSubTraceContextMiddleware
 								? new[] { value }
 								: Array.Empty<string>());
 
+					Baggage.Current = parentContext.Baggage;
+					
+					var currentActivity = Activity.Current;
+					
 					// Baggage.Current = parentContext.Baggage;
 					//
-					// var currentActivity = Activity.Current;
-					
-					Baggage.Current = parentContext.Baggage;
-
-					var activitySource = new ActivitySource("My First Project");
-					using var activity = activitySource.StartActivity(
-						"pubsub.receive",
-						ActivityKind.Consumer,
-						parentContext.ActivityContext);
+					// var activitySource = new ActivitySource("My First Project");
+					// using var activity = activitySource.StartActivity(
+					// 	"My First Project",
+					// 	ActivityKind.Consumer,
+					// 	parentContext.ActivityContext);
 					
 					
-					// if (currentActivity != null && parentContext.ActivityContext.TraceId != default)
-					// {
-					// 	currentActivity.SetParentId(parentContext.ActivityContext.TraceId, parentContext.ActivityContext.SpanId);
-					// 	
-					// 	_logger.LogInformation(
-					// 		"Extracted trace context from Pub/Sub message - TraceId: {TraceId}, SpanId: {SpanId}",
-					// 		parentContext.ActivityContext.TraceId,
-					// 		parentContext.ActivityContext.SpanId);
-					// }
-					// else
-					// {
-					// 	_logger.LogWarning("No valid trace context found in Pub/Sub message attributes");
-					// }
+					if (currentActivity != null && parentContext.ActivityContext.TraceId != default)
+					{
+						currentActivity.SetParentId(parentContext.ActivityContext.TraceId, parentContext.ActivityContext.SpanId);
+						
+						_logger.LogInformation(
+							"Extracted trace context from Pub/Sub message - TraceId: {TraceId}, SpanId: {SpanId}",
+							parentContext.ActivityContext.TraceId,
+							parentContext.ActivityContext.SpanId);
+					}
+					else
+					{
+						_logger.LogWarning("No valid trace context found in Pub/Sub message attributes");
+					}
 				}
 			}
 			catch (Exception ex)

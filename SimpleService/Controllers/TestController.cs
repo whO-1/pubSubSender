@@ -2,10 +2,12 @@
 using Google.Cloud.PubSub.V1;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
+using Encoding = System.Text.Encoding;
+using Google.Cloud.PubSub.V1;
+using Google.Protobuf;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
 using SimpleService.PubSub;
-using Encoding = System.Text.Encoding;
 
 namespace SimpleService.Controllers;
 
@@ -52,16 +54,12 @@ public class TestController(ILogger<TestController> logger, HttpClient httpClien
     [HttpPost("[action]")]
     public async Task<ActionResult> PublishMessageWithTraceId()
     {
-        var message = new PubSubMessage
+        var message = new PubsubMessage
         {
-            Subscription = "testSub",
-            Message = new PubSubMessage.Msg
-            {
-                Attributes = { { "Tenant-Id", "tenantId" } },
-                MessageId = "testId",
-                Data = "Test data",
-                OrederingKey = "test-key"
-            }
+            Attributes = { { "Tenant-Id", "tenantId" } },
+            MessageId = "testId",
+            Data = ByteString.CopyFromUtf8("hello world"),
+            OrderingKey = "data"
         };
         
         var attributes = new Dictionary<string, string>();
@@ -81,6 +79,28 @@ public class TestController(ILogger<TestController> logger, HttpClient httpClien
     [HttpPost("[action]/push")]
     public IActionResult TraceIdPropagation([FromBody] PubsubMessage message)
     {
+        // var propagator = new CompositeTextMapPropagator(
+        //     new TextMapPropagator[] {
+        //         new TraceContextPropagator(),
+        //         new BaggagePropagator()
+        //     }
+        // );
+        // var parentContext = propagator.Extract(
+        //     default,
+        //     message.Attributes,
+        //     (carrier, key) =>
+        //         carrier.TryGetValue(key, out var value)
+        //             ? new[] { value }
+        //             : Array.Empty<string>());
+        //
+        // Baggage.Current = parentContext.Baggage;
+        //
+        // var activitySource = new ActivitySource("myscan-input-api");
+        // using var activity = activitySource.StartActivity(
+        //     "pubsub.receive",
+        //     ActivityKind.Consumer,
+        //     parentContext.ActivityContext);
+        
         var traceId = Activity.Current?.TraceId.ToString() ?? "no-trace";
         logger.LogInformation("Processing Pub/Sub message with trace id: {TraceId}", traceId);
         
