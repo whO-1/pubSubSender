@@ -49,7 +49,7 @@ public class Startup
 
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
 	{
-		app.UseMiddleware<Middleware.PubSubTraceContextMiddleware>();
+		//app.UseMiddleware<Middleware.PubSubTraceContextMiddleware>();
 		app.UseSerilogRequestLogging();
 		app.UseRouting();
 		app.UseExceptionHandler("/error");

@@ -71,7 +71,6 @@ public class PubSubTraceContextMiddleware
 
 					if (parentContext.ActivityContext.TraceId != default)
 					{
-						// Try to set header before activity is created
 						if (!context.Request.Headers.ContainsKey("traceparent"))
 						{
 							var traceparent = $"00-{parentContext.ActivityContext.TraceId}-{parentContext.ActivityContext.SpanId}-01";
@@ -85,7 +84,6 @@ public class PubSubTraceContextMiddleware
 						
 						Baggage.Current = parentContext.Baggage;
 						
-						// Store in HttpContext items for later use
 						context.Items["PubSubTraceContext"] = parentContext;
 					}
 					else
