@@ -77,7 +77,7 @@ public class TestController(ILogger<TestController> logger, HttpClient httpClien
     }
     
     [HttpPost("[action]/push")]
-    public IActionResult TraceIdPropagation([FromBody] PubsubMessage message)
+    public IActionResult TraceIdPropagation([FromBody] object message)
     {
         // var propagator = new CompositeTextMapPropagator(
         //     new TextMapPropagator[] {
